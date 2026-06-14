@@ -171,7 +171,7 @@ Adição do anti-pattern "Deprecated/Obsolete APIs"
 
 * Imagens com dados sensíveis dos usuário exposto
 * Endpoints funcionando 
-* Mostrando inconsistência de dadps do Delete ao apagar um usuário com histórico de compara
+* Mostrando inconsistência de dados do Delete ao apagar um usuário com histórico de compara
 * Sem uso de autorização para ver dados financieros
 * Instalação do projeto e validação de endpoints
 
