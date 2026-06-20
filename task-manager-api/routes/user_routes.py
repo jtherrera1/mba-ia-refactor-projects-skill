@@ -1,8 +1,11 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from database import db
 from models.user import User
 from models.task import Task
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from src.config.settings import JWT_SECRET_KEY, JWT_EXPIRATION_HOURS
+from src.middlewares.auth import token_required
+import jwt
 import hashlib, json, re
 
 user_bp = Blueprint('users', __name__)
@@ -151,6 +154,7 @@ def delete_user(user_id):
         return jsonify({'error': 'Erro ao deletar'}), 500
 
 @user_bp.route('/users/<int:user_id>/tasks', methods=['GET'])
+@token_required
 def get_user_tasks(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -204,8 +208,17 @@ def login():
     if not user.active:
         return jsonify({'error': 'Usuário inativo'}), 403
 
+    payload = {
+        'user_id': user.id,
+        'email': user.email,
+        'role': user.role,
+        'exp': datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
+        'iat': datetime.now(timezone.utc)
+    }
+    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm='HS256')
+
     return jsonify({
         'message': 'Login realizado com sucesso',
         'user': user.to_dict(),
-        'token': 'fake-jwt-token-' + str(user.id)
+        'token': token
     }), 200

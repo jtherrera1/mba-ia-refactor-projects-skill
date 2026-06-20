@@ -1,5 +1,7 @@
 import logging
 import re
+from datetime import datetime, timedelta, timezone
+import jwt
 from src.config.database import db
 from src.models.user import User
 from src.models.task import Task
@@ -155,8 +157,17 @@ def login(data):
     if not user.active:
         return {'error': 'Usuário inativo'}, 403
 
+    payload = {
+        'user_id': user.id,
+        'email': user.email,
+        'role': user.role,
+        'exp': datetime.now(timezone.utc) + timedelta(hours=settings.JWT_EXPIRATION_HOURS),
+        'iat': datetime.now(timezone.utc),
+    }
+    token = jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm='HS256')
+
     return {
         'message': 'Login realizado com sucesso',
         'user': user.to_dict(),
-        'token': f'fake-jwt-token-{user.id}',
+        'token': token,
     }, 200

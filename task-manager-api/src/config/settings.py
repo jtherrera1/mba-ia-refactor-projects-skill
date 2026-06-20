@@ -19,6 +19,9 @@ MAX_PRIORITY = 5
 DEFAULT_PRIORITY = 3
 DEFAULT_COLOR = '#000000'
 
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', SECRET_KEY)
+JWT_EXPIRATION_HOURS = int(os.environ.get('JWT_EXPIRATION_HOURS', '24'))
+
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USER = os.environ.get('EMAIL_USER', '')
